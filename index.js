@@ -18,6 +18,10 @@ app.use(express.json({ limit: "10mb" }));
 app.use("/api/repo", repoRoutes);
 app.use("/api/chat", chatRoutes);
 
+app.get("/", (req, res) => {
+  res.send("AI Codebase Chat server is running!");
+});
+
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
