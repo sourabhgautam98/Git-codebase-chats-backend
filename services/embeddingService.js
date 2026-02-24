@@ -1,4 +1,4 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 let genAI = null;
 let embeddingModel = null;
@@ -43,4 +43,4 @@ const embedTexts = async (texts) => {
   return allEmbeddings;
 };
 
-module.exports = { embedText, embedTexts, getEmbeddingModel };
+export { embedText, embedTexts, getEmbeddingModel };

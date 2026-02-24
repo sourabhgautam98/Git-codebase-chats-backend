@@ -1,7 +1,7 @@
-const simpleGit = require("simple-git");
-const fs = require("fs");
-const path = require("path");
-const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
+import simpleGit from "simple-git";
+import fs from "fs";
+import path from "path";
+// import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 
 const CODE_EXTENSIONS = new Set([
   ".js", ".jsx", ".ts", ".tsx", ".py", ".java",
@@ -74,30 +74,30 @@ const parseAndChunkCode = async (dirPath) => {
   const codeFiles = readCodeFiles(dirPath);
   console.log(`📄 Found ${codeFiles.length} code files`);
 
-  const splitter = new RecursiveCharacterTextSplitter({
-    chunkSize: 1000,
-    chunkOverlap: 200,
-  });
+  // const splitter = new RecursiveCharacterTextSplitter({
+  //   chunkSize: 1000,
+  //   chunkOverlap: 200,
+  // });
 
   const allChunks = [];
 
-  for (const file of codeFiles) {
-    const header = `// File: ${file.filePath}\n`;
-    const docs = await splitter.createDocuments(
-      [header + file.content],
-      [{ filePath: file.filePath }]
-    );
+  // for (const file of codeFiles) {
+  //   const header = `// File: ${file.filePath}\n`;
+  //   const docs = await splitter.createDocuments(
+  //     [header + file.content],
+  //     [{ filePath: file.filePath }]
+  //   );
 
-    docs.forEach((doc, i) => {
-      allChunks.push({
-        text: doc.pageContent,
-        metadata: {
-          filePath: file.filePath,
-          chunkIndex: i,
-        },
-      });
-    });
-  }
+  //   docs.forEach((doc, i) => {
+  //     allChunks.push({
+  //       text: doc.pageContent,
+  //       metadata: {
+  //         filePath: file.filePath,
+  //         chunkIndex: i,
+  //       },
+  //     });
+  //   });
+  // }
 
   console.log(`🧩 Created ${allChunks.length} chunks`);
   return allChunks;
@@ -112,4 +112,4 @@ const cleanupRepo = (dirPath) => {
   }
 };
 
-module.exports = { cloneRepo, parseAndChunkCode, cleanupRepo };
+export { cloneRepo, parseAndChunkCode, cleanupRepo };

@@ -1,8 +1,8 @@
-const { v4: uuidv4 } = require("uuid");
-const { cloneRepo, parseAndChunkCode, cleanupRepo } = require("../utils/repoParser");
-const { embedTexts } = require("../services/embeddingService");
-const { upsertVectors } = require("../services/pineconeService");
-const Chat = require("../models/Chat");
+import { v4 as uuidv4 } from "uuid";
+import { cloneRepo, parseAndChunkCode, cleanupRepo } from "../utils/repoParser.js";
+import { embedTexts } from "../services/embeddingService.js";
+import { upsertVectors } from "../services/pineconeService.js";
+import Chat from "../models/Chat.js";
 
 const ingestRepo = async (req, res) => {
   const { repoUrl } = req.body;
@@ -107,4 +107,4 @@ const ingestRepo = async (req, res) => {
   }
 };
 
-module.exports = { ingestRepo };
+export { ingestRepo };

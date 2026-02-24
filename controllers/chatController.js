@@ -1,7 +1,7 @@
-const { embedText } = require("../services/embeddingService");
-const { querySimilar } = require("../services/pineconeService");
-const { generateAnswer } = require("../services/geminiService");
-const Chat = require("../models/Chat");
+import { embedText } from "../services/embeddingService.js";
+import { querySimilar } from "../services/pineconeService.js";
+import { generateAnswer } from "../services/geminiService.js";
+import Chat from "../models/Chat.js";
 
 const askQuestion = async (req, res) => {
   const { sessionId, question } = req.body;
@@ -100,4 +100,4 @@ const getHistory = async (req, res) => {
   }
 };
 
-module.exports = { askQuestion, getSessions, getHistory };
+export { askQuestion, getSessions, getHistory };

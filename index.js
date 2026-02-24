@@ -1,13 +1,18 @@
-const path = require("path");
-require("dotenv").config({ path: path.join(__dirname, ".env") });
-require("dotenv").config({ path: path.join(__dirname, "..", ".env") });
 
-const express = require("express");
-const cors = require("cors");
-const connectDB = require("./config/db");
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import express from "express";
+import cors from "cors";
+import connectDB from "./config/db.js";
+import repoRoutes from "./routes/repoRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
 
-const repoRoutes = require("./routes/repoRoutes");
-const chatRoutes = require("./routes/chatRoutes");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, ".env") });
+dotenv.config({ path: path.join(__dirname, "..", ".env") });
 
 const app = express();
 const PORT = process.env.PORT || 5000;

@@ -1,4 +1,4 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 let genAI = null;
 let model = null;
@@ -42,4 +42,4 @@ const generateAnswer = async (context, question) => {
   return response.text();
 };
 
-module.exports = { generateAnswer };
+export { generateAnswer };

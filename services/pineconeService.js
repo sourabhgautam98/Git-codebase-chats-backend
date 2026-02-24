@@ -1,4 +1,4 @@
-const { Pinecone } = require("@pinecone-database/pinecone");
+import { Pinecone } from "@pinecone-database/pinecone";
 
 let pineconeClient = null;
 
@@ -49,4 +49,4 @@ const deleteNamespace = async (namespace) => {
   await ns.deleteAll();
 };
 
-module.exports = { upsertVectors, querySimilar, deleteNamespace, getPineconeClient };
+export { upsertVectors, querySimilar, deleteNamespace, getPineconeClient };
