@@ -3,7 +3,6 @@ const fs = require("fs");
 const path = require("path");
 const { RecursiveCharacterTextSplitter } = require("langchain/text_splitter");
 
-// Supported code file extensions
 const CODE_EXTENSIONS = new Set([
   ".js", ".jsx", ".ts", ".tsx", ".py", ".java",
   ".go", ".rs", ".cpp", ".c", ".h", ".hpp",
@@ -12,7 +11,6 @@ const CODE_EXTENSIONS = new Set([
   ".json", ".yaml", ".yml", ".md", ".sql",
 ]);
 
-// Directories to always skip
 const IGNORE_DIRS = new Set([
   "node_modules", ".git", "dist", "build", ".next",
   "vendor", "__pycache__", ".venv", "venv",
@@ -20,13 +18,7 @@ const IGNORE_DIRS = new Set([
   "coverage", ".nyc_output",
 ]);
 
-/**
- * Clone a GitHub repo to a temp directory.
- * @param {string} repoUrl
- * @returns {Promise<{localPath: string, repoName: string}>}
- */
 const cloneRepo = async (repoUrl) => {
-  // Extract repo name from URL
   const urlParts = repoUrl.replace(/\.git$/, "").split("/");
   const repoName = urlParts[urlParts.length - 1];
   const owner = urlParts[urlParts.length - 2] || "unknown";
@@ -37,23 +29,17 @@ const cloneRepo = async (repoUrl) => {
     `${owner}_${repoName}_${Date.now()}`
   );
 
-  // Create tmp dir if needed
   if (!fs.existsSync(path.join(process.cwd(), "tmp"))) {
     fs.mkdirSync(path.join(process.cwd(), "tmp"), { recursive: true });
   }
 
   console.log(`📥 Cloning ${repoUrl} → ${localPath}`);
   const git = simpleGit();
-  await git.clone(repoUrl, localPath, ["--depth", "1"]); // shallow clone
+  await git.clone(repoUrl, localPath, ["--depth", "1"]);
 
   return { localPath, repoName: `${owner}/${repoName}` };
 };
 
-/**
- * Recursively read all code files from a directory.
- * @param {string} dirPath
- * @returns {Array<{filePath: string, content: string}>}
- */
 const readCodeFiles = (dirPath, basePath = dirPath) => {
   const results = [];
 
@@ -71,13 +57,11 @@ const readCodeFiles = (dirPath, basePath = dirPath) => {
       if (CODE_EXTENSIONS.has(ext)) {
         try {
           const content = fs.readFileSync(fullPath, "utf-8");
-          // Skip very large files (> 100KB) and empty files
           if (content.length > 0 && content.length < 100_000) {
             const relativePath = path.relative(basePath, fullPath);
             results.push({ filePath: relativePath, content });
           }
         } catch {
-          // Skip unreadable files
         }
       }
     }
@@ -86,11 +70,6 @@ const readCodeFiles = (dirPath, basePath = dirPath) => {
   return results;
 };
 
-/**
- * Parse code files into LangChain-chunked documents.
- * @param {string} dirPath - path to cloned repo
- * @returns {Promise<Array<{text: string, metadata: {filePath: string, chunkIndex: number}}>>}
- */
 const parseAndChunkCode = async (dirPath) => {
   const codeFiles = readCodeFiles(dirPath);
   console.log(`📄 Found ${codeFiles.length} code files`);
@@ -124,10 +103,6 @@ const parseAndChunkCode = async (dirPath) => {
   return allChunks;
 };
 
-/**
- * Cleanup cloned repo directory.
- * @param {string} dirPath
- */
 const cleanupRepo = (dirPath) => {
   try {
     fs.rmSync(dirPath, { recursive: true, force: true });

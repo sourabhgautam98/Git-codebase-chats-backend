@@ -3,10 +3,6 @@ const { querySimilar } = require("../services/pineconeService");
 const { generateAnswer } = require("../services/geminiService");
 const Chat = require("../models/Chat");
 
-/**
- * POST /api/chat/query
- * Body: { sessionId: string, question: string }
- */
 const askQuestion = async (req, res) => {
   const { sessionId, question } = req.body;
 
@@ -15,7 +11,6 @@ const askQuestion = async (req, res) => {
   }
 
   try {
-    // 1. Find the chat session
     const chatSession = await Chat.findById(sessionId);
     if (!chatSession) {
       return res.status(404).json({ error: "Chat session not found" });
@@ -27,10 +22,8 @@ const askQuestion = async (req, res) => {
 
     console.log(`\n💬 Question: "${question}" (repo: ${chatSession.repoName})`);
 
-    // 2. Embed the question
     const queryVector = await embedText(question);
 
-    // 3. Similarity search in Pinecone
     const matches = await querySimilar(queryVector, chatSession.namespace, 5);
 
     if (matches.length === 0) {
@@ -46,7 +39,6 @@ const askQuestion = async (req, res) => {
       return res.json({ answer: noContextAnswer, sources: [] });
     }
 
-    // 4. Build context from matched chunks
     const context = matches
       .map((match) => {
         const filePath = match.metadata?.filePath || "unknown";
@@ -61,10 +53,8 @@ const askQuestion = async (req, res) => {
 
     console.log(`📎 Found ${matches.length} relevant chunks from: ${sources.join(", ")}`);
 
-    // 5. Generate answer with Gemini
     const answer = await generateAnswer(context, question);
 
-    // 6. Save messages to chat history
     chatSession.messages.push(
       { role: "user", content: question },
       { role: "assistant", content: answer }
@@ -80,10 +70,6 @@ const askQuestion = async (req, res) => {
   }
 };
 
-/**
- * GET /api/chat/sessions
- * Returns all chat sessions.
- */
 const getSessions = async (req, res) => {
   try {
     const sessions = await Chat.find({})
@@ -96,10 +82,6 @@ const getSessions = async (req, res) => {
   }
 };
 
-/**
- * GET /api/chat/history/:sessionId
- * Returns chat history for a specific session.
- */
 const getHistory = async (req, res) => {
   try {
     const session = await Chat.findById(req.params.sessionId);

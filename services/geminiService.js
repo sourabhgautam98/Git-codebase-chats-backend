@@ -5,9 +5,6 @@ let model = null;
 
 const GEMINI_MODEL = "gemini-2.0-flash";
 
-/**
- * Get or create a singleton Gemini model instance.
- */
 const getModel = () => {
   if (!model) {
     genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
@@ -33,12 +30,6 @@ Answer the question accurately based on the provided code context. If the answer
 
 **Answer:**`;
 
-/**
- * Generate an answer given code context and a user question.
- * @param {string} context - concatenated relevant code chunks
- * @param {string} question - user's question
- * @returns {Promise<string>} the generated answer
- */
 const generateAnswer = async (context, question) => {
   const gemini = getModel();
 
