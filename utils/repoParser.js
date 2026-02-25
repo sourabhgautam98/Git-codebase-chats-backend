@@ -74,30 +74,33 @@ const parseAndChunkCode = async (dirPath) => {
   const codeFiles = readCodeFiles(dirPath);
   console.log(`📄 Found ${codeFiles.length} code files`);
 
-  // const splitter = new RecursiveCharacterTextSplitter({
-  //   chunkSize: 1000,
-  //   chunkOverlap: 200,
-  // });
-
+  const CHUNK_SIZE = 1000;
+  const CHUNK_OVERLAP = 200;
   const allChunks = [];
 
-  // for (const file of codeFiles) {
-  //   const header = `// File: ${file.filePath}\n`;
-  //   const docs = await splitter.createDocuments(
-  //     [header + file.content],
-  //     [{ filePath: file.filePath }]
-  //   );
+  for (const file of codeFiles) {
+    const header = `// File: ${file.filePath}\n`;
+    const text = header + file.content;
 
-  //   docs.forEach((doc, i) => {
-  //     allChunks.push({
-  //       text: doc.pageContent,
-  //       metadata: {
-  //         filePath: file.filePath,
-  //         chunkIndex: i,
-  //       },
-  //     });
-  //   });
-  // }
+    if (text.length <= CHUNK_SIZE) {
+      allChunks.push({
+        text,
+        metadata: { filePath: file.filePath, chunkIndex: 0 },
+      });
+    } else {
+      let start = 0;
+      let chunkIndex = 0;
+      while (start < text.length) {
+        const end = Math.min(start + CHUNK_SIZE, text.length);
+        allChunks.push({
+          text: text.slice(start, end),
+          metadata: { filePath: file.filePath, chunkIndex },
+        });
+        start += CHUNK_SIZE - CHUNK_OVERLAP;
+        chunkIndex++;
+      }
+    }
+  }
 
   console.log(`🧩 Created ${allChunks.length} chunks`);
   return allChunks;
